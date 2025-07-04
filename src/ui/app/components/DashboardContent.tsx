@@ -42,35 +42,7 @@ const borderCheckpoints = [
       { title: 'Стоимость подсадки', rb: '9 BYN', pl: '3.5 EUR' },
       { title: 'Переносы автобусов', value: 2 },
     ],
-  },
-  {
-    id: 4,
-    name: 'Берестовица — Кузница',
-    imageUrl: 'https://tailwindcss.com/plus-assets/img/logos/48x48/transistor.svg',
-    status: 'Загружен',
-    updatedAt: '2025-07-02T16:50:00+02:00',
-    data: [
-      { title: 'Автобусы', rb: { value: 5, change: 1 }, pl: { value: 4, change: 2 } },
-      { title: 'Автомобили', rb: { value: 12, change: 3 }, pl: { value: 10, change: -1 } },
-      { title: 'Время прохождения', rb: '3 ч', pl: '3.5 ч' },
-      { title: 'Стоимость подсадки', rb: '15 BYN', pl: '6 EUR' },
-      { title: 'Переносы автобусов', value: 5 },
-    ],
-  },
-  {
-    id: 5,
-    name: 'Привалка — Рачкунай',
-    imageUrl: 'https://tailwindcss.com/plus-assets/img/logos/48x48/statamic.svg',
-    status: 'Свободен',
-    updatedAt: '2025-07-02T16:30:00+02:00',
-    data: [
-      { title: 'Автобусы', rb: { value: 0, change: 0 }, pl: { value: 0, change: 0 } },
-      { title: 'Автомобили', rb: { value: 2, change: 0 }, pl: { value: 1, change: 0 } },
-      { title: 'Время прохождения', rb: '0.5 ч', pl: '1 ч' },
-      { title: 'Стоимость подсадки', rb: '-', pl: '-' },
-      { title: 'Переносы автобусов', value: 0 },
-    ],
-  },
+  }
 ];
 
 export default function DashboardContent() {

@@ -18,6 +18,38 @@ function formatChange(change: number) {
   );
 }
 
+const statusColors = {
+  'Свободен': {
+    border: 'border-green-300',
+    headerBg: 'bg-green-100',
+  },
+  'Средняя загрузка': {
+    border: 'border-yellow-300',
+    headerBg: 'bg-yellow-100',
+  },
+  'Загружен': {
+    border: 'border-red-300',
+    headerBg: 'bg-red-100',
+  },
+};
+
+function formatHumanDate(dateStr: string) {
+  const date = new Date(dateStr);
+  const now = new Date();
+
+  const isToday = date.toDateString() === now.toDateString();
+
+  return isToday
+    ? `Сегодня в ${date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`
+    : date.toLocaleDateString('ru-RU', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+}
+
 const StatusCard: React.FC<StatusCardProps> = ({
   id,
   name,
@@ -25,24 +57,17 @@ const StatusCard: React.FC<StatusCardProps> = ({
   updatedAt,
   data
 }) => {
+  const colors = statusColors[status] ?? {
+    border: 'border-gray-200',
+    headerBg: 'bg-gray-50',
+  };
+
   return (
-    <li key={id} className="overflow-hidden rounded-xl border border-gray-200 shadow-sm bg-white">
-      <div className="flex flex-col gap-y-1 border-b border-gray-900/5 bg-gray-50 px-6 py-3">
-        <div className="flex justify-between items-start">
-          <div>
-            <div className="text-base font-semibold text-gray-900">{name}</div>
-            <div className="text-xs text-gray-500">Обновлено: {new Date(updatedAt).toLocaleString()}</div>
-          </div>
-          <span
-            className={`ml-4 mt-0.5 inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${status === 'Свободен'
-              ? 'bg-green-50 text-green-700 ring-green-600/20'
-              : status === 'Загружен'
-                ? 'bg-red-50 text-red-700 ring-red-600/20'
-                : 'bg-yellow-50 text-yellow-800 ring-yellow-600/20'
-              }`}
-          >
-            {status}
-          </span>
+    <li key={id} className={`overflow-hidden rounded-xl shadow-sm bg-white ${colors.border} border`}>
+      <div className={`flex flex-col gap-y-1 border-b border-gray-900/5 px-6 py-3 ${colors.headerBg}`}>
+        <div className="text-base font-semibold text-gray-900">{name}</div>
+        <div className="text-xs text-gray-500">
+          Обновлено: {formatHumanDate(updatedAt)}
         </div>
       </div>
 
@@ -101,7 +126,7 @@ const StatusCard: React.FC<StatusCardProps> = ({
         </div>
       </div>
     </li>
-  )
+  );
 };
 
 export default StatusCard;
