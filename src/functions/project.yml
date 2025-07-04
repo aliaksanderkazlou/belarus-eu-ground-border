@@ -1,0 +1,14 @@
+environment:
+  DB_CONNECTION_STRING: "${DB_CONNECTION_STRING}"
+
+packages:
+  - name: latest-statuses
+    functions:
+      - name: latest-statuses
+        runtime: nodejs:18
+        web: true
+        annotations:
+          web-custom-options: true
+        limits:
+          timeout: 30000
+          memory: 256

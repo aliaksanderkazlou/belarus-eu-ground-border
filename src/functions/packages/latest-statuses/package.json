@@ -1,0 +1,8 @@
+{
+  "name": "latest-statuses",
+  "type": "module",
+  "main": "latest-statuses.js",
+  "dependencies": {
+    "mongodb": "6.17.0"
+  }
+}
