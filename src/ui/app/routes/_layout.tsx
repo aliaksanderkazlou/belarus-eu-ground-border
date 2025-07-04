@@ -1,7 +1,8 @@
+import '../utils/fontawesome'
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, BellIcon, EllipsisHorizontalIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/react/20/solid'
 import { CursorArrowRaysIcon, EnvelopeOpenIcon, UsersIcon } from '@heroicons/react/24/outline'
+import { Outlet } from '@remix-run/react'
 
 const user = {
   name: 'Tom Cook',
@@ -20,18 +21,6 @@ const userNavigation = [
   { name: 'Settings', href: '#' },
   { name: 'Sign out', href: '#' },
 ]
-
-const stats = [
-  { id: 1, name: 'Total Subscribers', stat: '71,897', icon: UsersIcon, change: '122', changeType: 'increase' },
-  { id: 2, name: 'Avg. Open Rate', stat: '58.16%', icon: EnvelopeOpenIcon, change: '5.4%', changeType: 'increase' },
-  { id: 3, name: 'Avg. Click Rate', stat: '24.57%', icon: CursorArrowRaysIcon, change: '3.2%', changeType: 'decrease' },
-]
-
-const statuses = {
-  Paid: 'text-green-700 bg-green-50 ring-green-600/20',
-  Withdraw: 'text-gray-600 bg-gray-50 ring-gray-500/10',
-  Overdue: 'text-red-700 bg-red-50 ring-red-600/10',
-}
 const clients = [
   {
     id: 1,
@@ -53,6 +42,11 @@ const clients = [
   },
 ]
 
+const people = [
+  { name: 'Lindsay Walton', title: 'Front-end Developer', email: 'lindsay.walton@example.com', role: 'Member' },
+  // More people...
+]
+
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
 }
@@ -60,14 +54,6 @@ function classNames(...classes: string[]) {
 export default function Example() {
   return (
     <>
-      {/*
-        This example requires updating your template:
-
-        ```
-        <html class="h-full">
-        <body class="h-full">
-        ```
-      */}
       <div className="min-h-full">
         <Disclosure as="nav" className="border-b border-gray-200 bg-white">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -205,72 +191,8 @@ export default function Example() {
         </Disclosure>
 
         <div className="py-10">
-          {/* <header>
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <h1 className="text-3xl font-bold tracking-tight text-gray-900">Ситуация на границе</h1>
-            </div>
-          </header> */}
           <main>
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">{
-              <ul role="list" className="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8">
-                {clients.map((client) => (
-                  <li key={client.id} className="overflow-hidden rounded-xl border border-gray-200">
-                    <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
-                      <div className="text-sm/6 font-medium text-gray-900">{client.name}</div>
-                      {/* <Menu as="div" className="relative ml-auto">
-                        <MenuButton className="relative block text-gray-400 hover:text-gray-500">
-                          <span className="absolute -inset-2.5" />
-                          <span className="sr-only">Open options</span>
-                          <EllipsisHorizontalIcon aria-hidden="true" className="size-5" />
-                        </MenuButton>
-                        <MenuItems
-                          transition
-                          className="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
-                        >
-                          <MenuItem>
-                            <a
-                              href="#"
-                              className="block px-3 py-1 text-sm/6 text-gray-900 data-[focus]:bg-gray-50 data-[focus]:outline-none"
-                            >
-                              View<span className="sr-only">, {client.name}</span>
-                            </a>
-                          </MenuItem>
-                          <MenuItem>
-                            <a
-                              href="#"
-                              className="block px-3 py-1 text-sm/6 text-gray-900 data-[focus]:bg-gray-50 data-[focus]:outline-none"
-                            >
-                              Edit<span className="sr-only">, {client.name}</span>
-                            </a>
-                          </MenuItem>
-                        </MenuItems>
-                      </Menu> */}
-                    </div>
-                    <dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm/6">
-                      <div className="flex justify-between gap-x-4 py-3">
-                        <dt className="text-gray-500">Last invoice</dt>
-                        <dd className="text-gray-700">
-                          <time dateTime={client.lastInvoice.dateTime}>{client.lastInvoice.date}</time>
-                        </dd>
-                      </div>
-                      <div className="flex justify-between gap-x-4 py-3">
-                        <dt className="text-gray-500">Amount</dt>
-                        <dd className="flex items-start gap-x-2">
-                          <div className="font-medium text-gray-900">{client.lastInvoice.amount}</div>
-                          <div
-                            className={classNames(
-                              statuses[client.lastInvoice.status],
-                              'rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset',
-                            )}
-                          >
-                            {client.lastInvoice.status}
-                          </div>
-                        </dd>
-                      </div>
-                    </dl>
-                  </li>
-                ))}
-              </ul>}</div>
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">{<Outlet />}</div>
           </main>
         </div>
       </div>
