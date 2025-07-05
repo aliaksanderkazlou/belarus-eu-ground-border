@@ -19,7 +19,7 @@ export async function main() {
       const pair = connection.checkpoints;
 
       const pairResult = {
-        checkpoints: {},
+        checkpoints: [],
         lastUpdatedAt: null,
       };
 
@@ -31,17 +31,24 @@ export async function main() {
           .toArray();
 
         if (records.length === 0) {
-          pairResult.checkpoints[checkpoint.name] = null;
+          pairResult.checkpoints.push({
+            name: checkpoint.name,
+            title: checkpoint.title,
+            latest: null,
+            delta: null,
+          });
           continue;
         }
 
         const latest = records[0];
         const previous = records[1] || null;
 
-        const calcDelta = (key) =>
+        const calculateDelta = (key) =>
           previous ? latest[key] - previous[key] : null;
 
-        pairResult.checkpoints[checkpoint.name] = {
+        pairResult.checkpoints.push({
+          name: checkpoint.name,
+          title: checkpoint.title,
           latest: {
             datetime: latest.datetime,
             buses: latest.buses,
@@ -49,11 +56,11 @@ export async function main() {
             trucks: latest.trucks || null,
           },
           delta: {
-            buses: calcDelta("buses"),
-            cars: calcDelta("cars"),
-            trucks: calcDelta("trucks"),
+            buses: calculateDelta("buses"),
+            cars: calculateDelta("cars"),
+            trucks: calculateDelta("trucks"),
           },
-        };
+        });
 
         if (
           !pairResult.lastUpdatedAt ||
@@ -68,13 +75,26 @@ export async function main() {
 
     return {
       statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      },
       body: JSON.stringify(results),
     };
   } catch (err) {
     console.error("Error:", err);
     return {
       statusCode: 500,
-      body: "Internal Server Error",
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: {
+        success: false,
+        error: err.message,
+      }
     };
   } finally {
     await client.close();

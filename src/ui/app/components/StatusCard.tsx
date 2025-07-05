@@ -1,14 +1,12 @@
 import React from "react";
+import { LatestStatus, Checkpoint, CheckpointData } from "~/api/latestStatuses";
 
 interface StatusCardProps {
-  id: number;
-  name: string;
-  status: string;
-  updatedAt: string;
-  data: any,
+  status: LatestStatus;
 }
 
-function formatChange(change: number) {
+function formatChange(change: number | undefined) {
+  if (change === null || change === undefined) return null;
   const positive = change > 0;
   const zero = change === 0;
   return (
@@ -18,22 +16,8 @@ function formatChange(change: number) {
   );
 }
 
-const statusColors = {
-  'Свободен': {
-    border: 'border-green-300',
-    headerBg: 'bg-green-100',
-  },
-  'Средняя загрузка': {
-    border: 'border-yellow-300',
-    headerBg: 'bg-yellow-100',
-  },
-  'Загружен': {
-    border: 'border-red-300',
-    headerBg: 'bg-red-100',
-  },
-};
-
-function formatHumanDate(dateStr: string) {
+function formatHumanDate(dateStr: string | Date | undefined) {
+  if (!dateStr) return '';
   const date = new Date(dateStr);
   const now = new Date();
 
@@ -50,24 +34,37 @@ function formatHumanDate(dateStr: string) {
     });
 }
 
-const StatusCard: React.FC<StatusCardProps> = ({
-  id,
-  name,
-  status,
-  updatedAt,
-  data
-}) => {
-  const colors = statusColors[status] ?? {
-    border: 'border-gray-200',
-    headerBg: 'bg-gray-50',
+export const StatusCard: React.FC<StatusCardProps> = ({ status }) => {
+  const [left, right] = status.checkpoints;
+
+  const titles = ["Автобусы", "Машины", "Грузовики"];
+
+  const renderCell = (
+    type: "buses" | "cars" | "trucks",
+    data?: CheckpointData,
+    delta?: CheckpointData
+  ) => {
+    const val = data?.[type];
+    const ch = delta?.[type];
+
+    if (val === null || val === undefined) return <span className="text-gray-400">—</span>;
+
+    return (
+      <>
+        {val}
+        {formatChange(ch)}
+      </>
+    );
   };
 
   return (
-    <li key={id} className={`overflow-hidden rounded-xl shadow-sm bg-white ${colors.border} border`}>
-      <div className={`flex flex-col gap-y-1 border-b border-gray-900/5 px-6 py-3 ${colors.headerBg}`}>
-        <div className="text-base font-semibold text-gray-900">{name}</div>
+    <li className="overflow-hidden rounded-xl border border-gray-300 shadow-sm bg-white">
+      <div className="flex flex-col gap-y-1 border-b border-gray-900/5 bg-gray-50 px-6 py-3">
+        <div className="text-base font-semibold text-gray-900">
+          {left.title} — {right.title}
+        </div>
         <div className="text-xs text-gray-500">
-          Обновлено: {formatHumanDate(updatedAt)}
+          Обновлено: {formatHumanDate(status.lastUpdatedAt)}
         </div>
       </div>
 
@@ -79,46 +76,27 @@ const StatusCard: React.FC<StatusCardProps> = ({
                 <thead>
                   <tr>
                     <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"></th>
-                    <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">РБ</th>
-                    <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">РП</th>
+                    <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{left.title}</th>
+                    <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{right.title}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {data.map((item, idx) => (
-                    <tr key={idx}>
-                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-0 font-medium">
-                        {item.title}
-                      </td>
-                      {'rb' in item && 'pl' in item ? (
-                        <>
-                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">
-                            {typeof item.rb === 'object' ? (
-                              <>
-                                {item.rb.value}
-                                {'change' in item.rb && formatChange(item.rb.change)}
-                              </>
-                            ) : (
-                              item.rb
-                            )}
-                          </td>
-                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">
-                            {typeof item.pl === 'object' ? (
-                              <>
-                                {item.pl.value}
-                                {'change' in item.pl && formatChange(item.pl.change)}
-                              </>
-                            ) : (
-                              item.pl
-                            )}
-                          </td>
-                        </>
-                      ) : (
-                        <td colSpan={2} className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">
-                          {item.value}
+                  {titles.map((title, idx) => {
+                    const key = ["buses", "cars", "trucks"][idx] as keyof CheckpointData;
+                    return (
+                      <tr key={key}>
+                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-0 font-medium">
+                          {title}
                         </td>
-                      )}
-                    </tr>
-                  ))}
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">
+                          {renderCell(key, left.latest, left.delta)}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">
+                          {renderCell(key, right.latest, right.delta)}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
