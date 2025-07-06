@@ -6,8 +6,6 @@ export async function apiClient<T>(
 ): Promise<T> {
   const url = `${config.API_BASE_URL}${endpoint}`;
 
-  console.log(url);
-
   const response = await fetch(url, {
     headers: {
       "Content-Type": "application/json",

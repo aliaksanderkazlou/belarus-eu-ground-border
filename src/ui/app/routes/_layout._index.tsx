@@ -10,8 +10,6 @@ export const loader = async () => {
 
 export default function Dashboard() {
   const { latestStatuses } = useLoaderData<typeof loader>();
-
-  console.log(latestStatuses);
   
   return <DashboardContent
     latestStatuses={latestStatuses}

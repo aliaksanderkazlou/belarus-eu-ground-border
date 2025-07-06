@@ -1,5 +1,6 @@
 import React from "react";
 import { LatestStatus, Checkpoint, CheckpointData } from "~/api/latestStatuses";
+import Card from "./shared/Card";
 
 interface StatusCardProps {
   status: LatestStatus;
@@ -58,7 +59,7 @@ export const StatusCard: React.FC<StatusCardProps> = ({ status }) => {
   };
 
   return (
-    <li className="overflow-hidden rounded-xl border border-gray-300 shadow-sm bg-white">
+    <Card>
       <div className="flex flex-col gap-y-1 border-b border-gray-900/5 bg-gray-50 px-6 py-3">
         <div className="text-base font-semibold text-gray-900">
           {left.title} — {right.title}
@@ -71,7 +72,7 @@ export const StatusCard: React.FC<StatusCardProps> = ({ status }) => {
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flow-root">
           <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+            <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-6">
               <table className="min-w-full divide-y divide-gray-300">
                 <thead>
                   <tr>
@@ -103,7 +104,7 @@ export const StatusCard: React.FC<StatusCardProps> = ({ status }) => {
           </div>
         </div>
       </div>
-    </li>
+    </Card>
   );
 };
 
