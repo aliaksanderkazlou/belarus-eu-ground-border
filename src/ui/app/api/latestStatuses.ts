@@ -3,7 +3,10 @@ import { apiClient } from "./apiClient";
 export interface LatestStatus {
   checkpoints: Checkpoint[];
   lastUpdatedAt: Date;
+  congestion: CongestionLevel;
 }
+
+export type CongestionLevel = "free" | "medium" | "heavy";
 
 export interface Checkpoint {
   latest?: CheckpointData;

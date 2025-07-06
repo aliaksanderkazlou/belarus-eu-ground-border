@@ -2,19 +2,29 @@ environment:
   DB_CONNECTION_STRING: "${DB_CONNECTION_STRING}"
 parameters: {}
 packages:
-    - name: functions
-      shared: false
-      environment: {}
-      parameters: {}
-      annotations: {}
-      functions:
-        - name: latest-statuses
-          runtime: nodejs:18
-          binary: false
-          parameters: {}
-          web: true
-          annotations:
-            web-custom-options: true
-          limits:
-            timeout: 3000
-            memory: 256
+  - name: functions
+    shared: false
+    environment: {}
+    parameters: {}
+    annotations: {}
+    functions:
+      - name: latest-statuses
+        runtime: nodejs:18
+        binary: false
+        parameters: {}
+        web: true
+        annotations:
+          web-custom-options: true
+        limits:
+          timeout: 3000
+          memory: 256
+      - name: history-points
+        runtime: nodejs:18
+        binary: false
+        parameters: {}
+        web: true
+        annotations:
+          web-custom-options: true
+        limits:
+          timeout: 3000
+          memory: 256

@@ -1,0 +1,8 @@
+{
+  "name": "history-points",
+  "type": "module",
+  "main": "history-points.js",
+  "dependencies": {
+    "mongodb": "6.17.0"
+  }
+}

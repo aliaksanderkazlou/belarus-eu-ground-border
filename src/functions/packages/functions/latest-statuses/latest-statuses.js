@@ -21,7 +21,10 @@ export async function main() {
       const pairResult = {
         checkpoints: [],
         lastUpdatedAt: null,
+        congestion: "free",
       };
+
+      let maxCongestionLevel = "free";
 
       for (const checkpoint of pair) {
         const records = await data
@@ -46,20 +49,38 @@ export async function main() {
         const calculateDelta = (key) =>
           previous ? latest[key] - previous[key] : null;
 
+        const latestData = {
+          datetime: latest.datetime,
+          buses: latest.buses,
+          cars: latest.cars,
+          trucks: latest.trucks || null,
+        };
+
+        const deltaData = {
+          buses: calculateDelta("buses"),
+          cars: calculateDelta("cars"),
+          trucks: calculateDelta("trucks"),
+        };
+
+        const congestion =
+          latest.buses > 15 || latest.cars > 250
+            ? "heavy"
+            : latest.buses > 3 || latest.cars > 50
+            ? "medium"
+            : "free";
+
+        if (
+          congestion === "heavy" ||
+          (congestion === "medium" && maxCongestionLevel !== "heavy")
+        ) {
+          maxCongestionLevel = congestion;
+        }
+
         pairResult.checkpoints.push({
           name: checkpoint.name,
           title: checkpoint.title,
-          latest: {
-            datetime: latest.datetime,
-            buses: latest.buses,
-            cars: latest.cars,
-            trucks: latest.trucks || null,
-          },
-          delta: {
-            buses: calculateDelta("buses"),
-            cars: calculateDelta("cars"),
-            trucks: calculateDelta("trucks"),
-          },
+          latest: latestData,
+          delta: deltaData,
         });
 
         if (
@@ -70,6 +91,7 @@ export async function main() {
         }
       }
 
+      pairResult.congestion = maxCongestionLevel;
       results.push(pairResult);
     }
 

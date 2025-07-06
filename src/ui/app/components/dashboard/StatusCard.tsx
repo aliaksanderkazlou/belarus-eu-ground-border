@@ -1,10 +1,16 @@
 import React from "react";
-import { LatestStatus, Checkpoint, CheckpointData } from "~/api/latestStatuses";
-import Card from "./shared/Card";
+import { LatestStatus, CheckpointData } from "~/api/latestStatuses";
+import Card from "../shared/Card";
 
 interface StatusCardProps {
   status: LatestStatus;
 }
+
+const congestionMap = {
+  free: { color: "green", headerBg: "bg-green-50" },
+  medium: { color: "yellow", headerBg: "bg-yellow-50" },
+  heavy: { color: "red", headerBg: "bg-red-50" },
+} as const;
 
 function formatChange(change: number | undefined) {
   if (change === null || change === undefined) return null;
@@ -27,18 +33,19 @@ function formatHumanDate(dateStr: string | Date | undefined) {
   return isToday
     ? `Сегодня в ${date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`
     : date.toLocaleDateString('ru-RU', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
 }
 
 export const StatusCard: React.FC<StatusCardProps> = ({ status }) => {
   const [left, right] = status.checkpoints;
 
   const titles = ["Автобусы", "Машины", "Грузовики"];
+  const keys: Array<"buses" | "cars" | "trucks"> = ["buses", "cars", "trucks"];
 
   const renderCell = (
     type: "buses" | "cars" | "trucks",
@@ -58,9 +65,12 @@ export const StatusCard: React.FC<StatusCardProps> = ({ status }) => {
     );
   };
 
+  const color = congestionMap[status.congestion]?.color ?? "gray";
+  const headerBg = congestionMap[status.congestion]?.headerBg ?? "bg-gray-50";
+
   return (
-    <Card>
-      <div className="flex flex-col gap-y-1 border-b border-gray-900/5 bg-gray-50 px-6 py-3">
+    <Card color={color}>
+      <div className={`flex flex-col gap-y-1 border-b border-gray-900/5 px-6 py-3 ${headerBg}`}>
         <div className="text-base font-semibold text-gray-900">
           {left.title} — {right.title}
         </div>
@@ -83,7 +93,7 @@ export const StatusCard: React.FC<StatusCardProps> = ({ status }) => {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {titles.map((title, idx) => {
-                    const key = ["buses", "cars", "trucks"][idx] as keyof CheckpointData;
+                    const key = keys[idx];
                     return (
                       <tr key={key}>
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-0 font-medium">
