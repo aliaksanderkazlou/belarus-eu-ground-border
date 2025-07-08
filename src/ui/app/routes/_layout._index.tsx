@@ -1,20 +1,64 @@
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, useSearchParams } from "@remix-run/react";
 import { getHistoryPoints, HistoryRange } from "~/api/historyPoints";
 import { getLatestStatuses } from "~/api/latestStatuses";
 import DashboardContent from "~/components/dashboard/DashboardContent";
 
-export const loader = async () => {
-  const latestStatuses = await getLatestStatuses();
-  const historyPoints = await getHistoryPoints('brest', HistoryRange.Year);
+const defaultCheckpoint = "brest";
+const defaultRange = HistoryRange.Today;
 
-  return { latestStatuses, historyPoints };
+export const loader = async ({ request }: { request: Request }) => {
+  const url = new URL(request.url);
+  const checkpoint = url.searchParams.get("checkpoint") || defaultCheckpoint;
+  const range = (url.searchParams.get("range") as HistoryRange) || defaultRange;
+
+  const latestStatuses = await getLatestStatuses();
+  const historyPoints = await getHistoryPoints(checkpoint, range);
+
+  return Response.json({
+    latestStatuses,
+    historyPoints,
+    selectedCheckpoint: checkpoint,
+    selectedRange: range,
+  });
 };
 
 export default function Dashboard() {
-  const { latestStatuses, historyPoints } = useLoaderData<typeof loader>();
-  
-  return <DashboardContent
-    latestStatuses={latestStatuses}
-    historyPoints={historyPoints}
-  />;
+  const { latestStatuses, historyPoints, selectedCheckpoint, selectedRange } = useLoaderData<typeof loader>();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const handleCheckpointChange = (newCheckpoint: string) => {
+    setSearchParams((prev) => {
+      const newParams = new URLSearchParams(prev);
+      newParams.set("checkpoint", newCheckpoint);
+      return newParams;
+    });
+  };
+
+  const handleRangeChange = (newRange: string) => {
+    setSearchParams((prev) => {
+      const newParams = new URLSearchParams(prev);
+      newParams.set("range", newRange);
+      return newParams;
+    });
+  };
+
+  return (
+    <DashboardContent
+      latestStatuses={latestStatuses}
+      historyPoints={historyPoints}
+      selectedCheckpoint={selectedCheckpoint}
+      selectedRangeOption={selectedRange}
+      rangeOptions={[
+        HistoryRange.Today,
+        HistoryRange.ThreeDays,
+        HistoryRange.FiveDays,
+        HistoryRange.TenDays,
+        HistoryRange.Month,
+        HistoryRange.Year,
+        HistoryRange.AllTime
+      ]}
+      onCheckpointChange={handleCheckpointChange}
+      onRangeChange={handleRangeChange}
+    />
+  );
 }

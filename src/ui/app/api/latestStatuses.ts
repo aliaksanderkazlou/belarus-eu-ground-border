@@ -8,11 +8,14 @@ export interface LatestStatus {
 
 export type CongestionLevel = "free" | "medium" | "heavy";
 
-export interface Checkpoint {
-  latest?: CheckpointData;
-  delta?: CheckpointData;
+export interface CheckpointBase {
   name: string;
   title: string;
+}
+
+export interface Checkpoint extends CheckpointBase {
+  latest?: CheckpointData;
+  delta?: CheckpointData;
 }
 
 export interface CheckpointData {

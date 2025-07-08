@@ -23,8 +23,8 @@ export async function main(args) {
     "5d": { from: new Date(now.setDate(now.getDate() - 4)), unit: "hour", binSize: 12 },
     "10d": { from: new Date(now.setDate(now.getDate() - 6)), unit: "day" },
     "1m": { from: new Date(now.setMonth(now.getMonth() - 1)), unit: "day" },
-    "1y": { from: new Date(now.setFullYear(now.getFullYear() - 1)), unit: "week" },
-    all: { from: new Date("2022-01-01"), unit: "month" },
+    "1y": { from: new Date(now.setFullYear(now.getFullYear() - 1)), unit: "day" },
+    all: { from: new Date("2022-01-01"), unit: "day" },
   };
 
   const config = rangeToConfig[range];
