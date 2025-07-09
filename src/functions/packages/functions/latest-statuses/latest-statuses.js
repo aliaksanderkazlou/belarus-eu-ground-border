@@ -1,5 +1,11 @@
 import { MongoClient } from "mongodb";
 
+const shiftFromMinskToUTC = (date) => {
+  const minskOffset = 3 * 60;
+  const corrected = new Date(date.getTime() - minskOffset * 60000);
+  return corrected.toISOString();
+}
+
 const uri = process.env.DB_CONNECTION_STRING;
 const client = new MongoClient(uri);
 
@@ -87,7 +93,7 @@ export async function main() {
           !pairResult.lastUpdatedAt ||
           latest.datetime > pairResult.lastUpdatedAt
         ) {
-          pairResult.lastUpdatedAt = latest.datetime;
+          pairResult.lastUpdatedAt = shiftFromMinskToUTC(new Date(latest.datetime));
         }
       }
 

@@ -3,6 +3,12 @@ import { MongoClient } from "mongodb";
 const uri = process.env.DB_CONNECTION_STRING;
 const client = new MongoClient(uri);
 
+const shiftFromMinskToUTC = (date) => {
+  const minskOffset = 3 * 60;
+  const corrected = new Date(date.getTime() - minskOffset * 60000);
+  return corrected.toISOString();
+}
+
 export async function main(args) {
   const { checkpoint, range } = args;
 
@@ -53,7 +59,10 @@ export async function main(args) {
       return {
         statusCode: 200,
         headers: corsHeaders(),
-        body: results,
+        body: results.map((r) => ({
+          ...r,
+          datetime: shiftFromMinskToUTC(new Date(r.datetime)),
+        })),
       };
     } else {
       const results = await collection
@@ -99,7 +108,10 @@ export async function main(args) {
       return {
         statusCode: 200,
         headers: corsHeaders(),
-        body: results,
+        body: results.map((r) => ({
+          ...r,
+          datetime: shiftFromMinskToUTC(new Date(r.datetime)),
+        })),
       };
     }
   } catch (err) {
