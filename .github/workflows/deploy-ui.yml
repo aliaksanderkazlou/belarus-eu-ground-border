@@ -1,0 +1,33 @@
+name: Deploy UI application to DigitalOcean
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.DIGITALOCEAN_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Deploy and restart containers
+      run: |
+        ssh ${{ secrets.DIGITALOCEAN_USER }}@${{ secrets.DIGITALOCEAN_HOST }} << 'EOF'
+          cd ${{ secrets.UI_PATH }}
+          git checkout -- .
+          git pull origin main
+          pm2 stop border
+          npm install
+          npm run build
+          PORT=80 pm2 start npm --name "border" -- run start
+        EOF

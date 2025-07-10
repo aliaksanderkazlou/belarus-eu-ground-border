@@ -24,14 +24,14 @@ export const loader = async ({ request }: { request: Request }) => {
 
 export default function Dashboard() {
   const { latestStatuses, historyPoints, selectedCheckpoint, selectedRange } = useLoaderData<typeof loader>();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [_, setSearchParams] = useSearchParams();
 
   const handleCheckpointChange = (newCheckpoint: string) => {
     setSearchParams((prev) => {
       const newParams = new URLSearchParams(prev);
       newParams.set("checkpoint", newCheckpoint);
       return newParams;
-    });
+    }, { replace: true });
   };
 
   const handleRangeChange = (newRange: string) => {
@@ -39,7 +39,7 @@ export default function Dashboard() {
       const newParams = new URLSearchParams(prev);
       newParams.set("range", newRange);
       return newParams;
-    });
+    }, { replace: true });
   };
 
   return (
