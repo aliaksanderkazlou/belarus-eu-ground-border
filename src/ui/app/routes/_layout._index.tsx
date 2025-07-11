@@ -4,7 +4,7 @@ import { getLatestStatuses } from "~/api/latestStatuses";
 import DashboardContent from "~/components/dashboard/DashboardContent";
 
 const defaultCheckpoint = "brest";
-const defaultRange = HistoryRange.Today;
+const defaultRange = HistoryRange.ThreeDays;
 
 export const loader = async ({ request }: { request: Request }) => {
   const url = new URL(request.url);
@@ -26,20 +26,25 @@ export default function Dashboard() {
   const { latestStatuses, historyPoints, selectedCheckpoint, selectedRange } = useLoaderData<typeof loader>();
   const [_, setSearchParams] = useSearchParams();
 
-  const handleCheckpointChange = (newCheckpoint: string) => {
+  const handleSelectableParameterChange = (parameterName: string, parameterValue: string) => {
     setSearchParams((prev) => {
       const newParams = new URLSearchParams(prev);
-      newParams.set("checkpoint", newCheckpoint);
+
+      newParams.set(parameterName, parameterValue);
+
       return newParams;
-    }, { replace: true });
-  };
+    }, {
+      replace: true,
+      preventScrollReset: true
+    });
+  }
+
+  const handleCheckpointChange = (newCheckpoint: string) => {
+    handleSelectableParameterChange("checkpoint", newCheckpoint);
+  }
 
   const handleRangeChange = (newRange: string) => {
-    setSearchParams((prev) => {
-      const newParams = new URLSearchParams(prev);
-      newParams.set("range", newRange);
-      return newParams;
-    }, { replace: true });
+    handleSelectableParameterChange("range", newRange);
   };
 
   return (
