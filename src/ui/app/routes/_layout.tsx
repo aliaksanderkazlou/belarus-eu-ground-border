@@ -1,5 +1,3 @@
-import '../utils/fontawesome'
-
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { Outlet } from '@remix-run/react'
