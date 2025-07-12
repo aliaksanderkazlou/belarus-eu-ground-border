@@ -3,10 +3,12 @@ import StatusCard from "./StatusCard";
 import { HistoryPoint } from "~/api/historyPoints";
 import { HistoryGraph } from "./HistoryGraph";
 import DashboardFilters from "./DashboardFilters";
+import { Suspense } from "react";
+import { Await } from "@remix-run/react";
 
 interface DashboardContentProps {
   latestStatuses: LatestStatus[];
-  historyPoints: HistoryPoint[];
+  historyPoints: Promise<HistoryPoint[]>;
   selectedRangeOption: string;
   rangeOptions: string[];
   selectedCheckpoint: string;
@@ -52,9 +54,14 @@ export default function DashboardContent({
       </div>
 
       <ul role="list" className="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-1 xl:gap-x-8 pt-2">
-        <HistoryGraph
-          historyPoints={historyPoints}
-        />
+        <Suspense fallback={<div>Waiting...</div>}>
+          <Await resolve={historyPoints}>
+            {(historyPoints) =>
+              <HistoryGraph
+                historyPoints={historyPoints}
+              />}
+          </Await>
+        </Suspense>
       </ul>
     </div>
   );

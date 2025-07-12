@@ -2,6 +2,7 @@ import { useLoaderData, useSearchParams } from "@remix-run/react";
 import { getHistoryPoints, HistoryRange } from "~/api/historyPoints";
 import { getLatestStatuses } from "~/api/latestStatuses";
 import DashboardContent from "~/components/dashboard/DashboardContent";
+import { defer } from "@remix-run/node"; 
 
 const defaultCheckpoint = "brest";
 const defaultRange = HistoryRange.ThreeDays;
@@ -11,12 +12,12 @@ export const loader = async ({ request }: { request: Request }) => {
   const checkpoint = url.searchParams.get("checkpoint") || defaultCheckpoint;
   const range = (url.searchParams.get("range") as HistoryRange) || defaultRange;
 
+  const historyPointsPromise = getHistoryPoints(checkpoint, range);
   const latestStatuses = await getLatestStatuses();
-  const historyPoints = await getHistoryPoints(checkpoint, range);
 
-  return Response.json({
+  return defer({
     latestStatuses,
-    historyPoints,
+    historyPoints: historyPointsPromise,
     selectedCheckpoint: checkpoint,
     selectedRange: range,
   });
